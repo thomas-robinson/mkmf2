@@ -16,7 +16,6 @@
 !* You should have received a copy of the GNU Lesser General Public
 !* License along with FMS.  If not, see <http://www.gnu.org/licenses/>.
 !***********************************************************************
-use iso_c_binding
 MODULE diag_manager_mod
 #include <fms_platform.h>
   ! <CONTACT EMAIL="Matthew.Harrison@gfdl.noaa.gov">
@@ -201,7 +200,9 @@ MODULE diag_manager_mod
        & OPERATOR(<), OPERATOR(==), OPERATOR(/=), OPERATOR(/), OPERATOR(+), ASSIGNMENT(=), get_date, &
        & get_ticks_per_second
 USE mpp_io_mod, ONLY: mpp_open, mpp_close, mpp_get_maxunits
-  USE mpp_mod, ONLY: mpp_get_current_pelist, mpp_pe, mpp_npes, mpp_root_pe, mpp_sum
+  USE&
+ mpp_mod, ONLY: mpp_get_current_pelist, mpp_pe, mpp_npes, mpp_root_pe, mpp_sum
+
 
 #ifdef INTERNAL_FILE_NML
   USE mpp_mod, ONLY: input_nml_file
@@ -209,10 +210,15 @@ USE mpp_io_mod, ONLY: mpp_open, mpp_close, mpp_get_maxunits
   USE fms_mod, ONLY: open_namelist_file, close_file
 #endif
 
-  USE fms_mod, ONLY: error_mesg, FATAL, WARNING, NOTE, stdout, stdlog, write_version_number,&
+  USE       &
+& fms_mod, ONLY: error_mesg, FATAL, WARNING, NOTE, stdout, stdlog, write_version_number,&
        & file_exist, fms_error_handler, check_nml_error, get_mosaic_tile_file, lowercase
-  USE fms_io_mod, ONLY: get_instance_filename
-  USE diag_axis_mod, ONLY: diag_axis_init, get_axis_length, get_axis_num, get_domain2d, get_tile_count,&
+  USE fms_io_mod&
+                , ONLY: get_instance_filename
+  USE &
+&
+&
+   diag_axis_mod, ONLY: diag_axis_init, get_axis_length, get_axis_num, get_domain2d, get_tile_count,&
        & diag_axis_add_attribute, axis_compatible_check
   USE diag_util_mod, ONLY: get_subfield_size, log_diag_field_info, update_bounds,&
        & check_out_of_bounds, check_bounds_are_exact_dynamic, check_bounds_are_exact_static,&
