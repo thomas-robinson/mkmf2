@@ -18,7 +18,7 @@ def getModules(fileName):
 	
 	for match in matches:
 		match = match.lower().strip()
-		badChars = ["use", "&", "\r", '\n', ' ', ',']
+		badChars = ["use", "&", '\n', ' ', ',']
 		#clean up the matches
 		for char in badChars:
 			match = match.replace(char, '')
