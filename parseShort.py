@@ -1,11 +1,11 @@
-#!/bin/python
 import re;
 import os;
-
+##!@package Parser
+#Resolves dependencies 
 fName = "diag_manager.F90"
 
 
-##Parses Fortran file and returns module dependencies
+##\brief Parses Fortran file and returns module dependencies
 #
 #This function takes in a file to parse through. 
 #Using regex pattern matching a module list is populated, cleaned up, and returned without duplicates.  
@@ -28,7 +28,6 @@ def getModules(fileName):
 	for match in matches:
 		match = match.lower().strip()
 		badChars = ["use", "&", '\n', ' ', ',']
-		#clean up the matches
 		for char in badChars:
 			match = match.replace(char, '')
 		if not match in MODS:
@@ -37,27 +36,41 @@ def getModules(fileName):
 	
 	return MODS
 
-##Creates a Makefile.am
+##\brief Creates a Makefile.am
 #Creates a Makefile.am in the path provided, resolving all the dependencies
 def writeModules(modules, path):
+	
+	folder = path.split('/')[len(path.split('/'))-1]
 	
 	makefile = open('Makefile.am', 'w')
 	
 	fileList = os.listdir(path)
 	
-	fortranMatch = re.compile('[.F90&]')
+	fortranMatch = re.compile('[F90$]', re.IGNORECASE)
 	
-	makefile.write("noinst_LTLIBRARIES = " + path + ".la\n")
+	makefile.write("SUBDIRS = \ \n")
+	for file in fileList:
+		if not fortranMatch.match(file):
+			makefile.write("\t" + file + " \ \n")
+	
+	makefile.write("\n\n")
+	makefile.write("noinst_LTLIBRARIES = lib" + folder + ".la\n")
+	makefile.write("lib" + folder +"_la_SOURCES = \ \n")
 	
 	for file in fileList:
-		if fotranMatch.match(file):
-			makefile.write(file + "\\n")
-		
-	for mod in modules:
-		makefile.write(mod + ".$(FC_MODEXT) : " + mod + ".$(OBJEXT)\n")
+		if fortranMatch.match(file):
+			makefile.write("\t" + file + " \ \n")
 	
+	makefile.write("\n\n")
+		
+	for file in fileList:
+		makefile.write(file.split('.')[0] + ".$(FC_MODEXT) : " + file.split('.')[0] + ".$(OBJEXT)\n")
+		
+	makefile.write("\n\n")
+	
+	makefile.write("CLEANFILES = *.$(FC_MODEXT)")
 
 if __name__ == '__main__':
-	#testing diag_manager.F90
+	writeModules(getModules(fName), '/home/Diyor.Zakirov/atmos_param/clubb/CLUBB_core')
 	print(getModules(fName))
 	

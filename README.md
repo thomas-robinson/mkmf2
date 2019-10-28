@@ -1,3 +1,19 @@
+#How to run a parser test
+
+1. git clone the diyorzakirov07/mkmf2 branch.
+2. cd to mkmf2. 
+3. Run the parserTest.py script that requiers a path to the .F90 file or use 'diag_manager.F90'.
+
+**Example:** 
+```
+./parserTest.py path/to/your/file
+or
+./parserTest.py diag_manager.F90
+```
+
+4. The script will print out all the module dependencies the file has. 
+
+
 # mkmf2
 mkmf2 is a tool to create Makefile.am files based on fortran module depenencies.  
 1. mkmf2 is a Python script
