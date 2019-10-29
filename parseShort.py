@@ -1,8 +1,9 @@
 import re;
 import os;
-##!@package Parser
+##\package Parse
 #Resolves dependencies 
 fName = "diag_manager.F90"
+
 ##\brief Parses Fortran file and returns module dependencies
 #
 #This function takes in a file to parse through. 
@@ -39,13 +40,27 @@ def getModules(fileName, verbose = False):
 			print("Cleaning up the match: " + match +"\n")
 		if not match in MODS:
 			MODS.append(match)
-			
-	print("The module dependencies are:")
+	
+	if verbose:		
+		print("The module dependencies are:")
 	return MODS
+
+
+def getFileModuleName(fileName):
+	print(fileName)
+	fileContents = open(fileName).read()
+	
+	moduleNameMatch = re.compile('MODULE+.*', re.IGNORECASE)
+	
+	matches = re.findall(moduleNameMatch, fileContents)
+	
+	return matches[0].split(' ')[1]
 
 ##\brief Creates a Makefile.am
 #Creates a Makefile.am in the path provided, resolving all the dependencies
-def writeModules(modules, path):
+def writeModules(path):
+	
+	os.chdir(path)
 	
 	folder = path.split('/')[len(path.split('/'))-1]
 	
@@ -53,11 +68,11 @@ def writeModules(modules, path):
 	
 	fileList = os.listdir(path)
 	
-	fortranMatch = re.compile('[F90$]', re.IGNORECASE)
+	fortranMatch = re.compile('.*F90', re.IGNORECASE)
 	
 	makefile.write("SUBDIRS = \ \n")
 	for file in fileList:
-		if not fortranMatch.match(file):
+		if not fortranMatch.match(file) and not os.path.isfile(file):
 			makefile.write("\t" + file + " \ \n")
 	
 	makefile.write("\n\n")
@@ -71,13 +86,31 @@ def writeModules(modules, path):
 	makefile.write("\n\n")
 		
 	for file in fileList:
-		makefile.write(file.split('.')[0] + ".$(FC_MODEXT) : " + file.split('.')[0] + ".$(OBJEXT)\n")
+		if fortranMatch.match(file):
+			makefile.write(getFileModuleName(file) + ".$(FC_MODEXT) : " + file.split('.')[0] + ".$(OBJEXT)\n")
 		
+	makefile.write("\n\n")
+	
+	for file in fileList:
+		print(file)
+		if fortranMatch.match(file):
+			makefile.write(file.split('.')[0] + ".$(OBJEXT) : \ \n")
+			for mod in getModules(file):
+				makefile.write("\t" + mod + ".$(FC_MODEXT) \ \n")
+				
+	makefile.write("\n\n")
+	makefile.write("MODFILES = \ \n")
+	
+	for file in fileList:
+		if fortranMatch.match(file):
+			for mod in getModules(file):
+				makefile.write("\t" + mod + ".$(FC_MODEXT) \ \n")
+	
+	makefile.write("BUILT_SOURCES = $(MODFILES)\n")
+	makefile.write("include_HEADERS = $(MODFILES)\n")
 	makefile.write("\n\n")
 	
 	makefile.write("CLEANFILES = *.$(FC_MODEXT)")
 
 if __name__ == '__main__':
-	writeModules(getModules(fName), '/home/Diyor.Zakirov/atmos_param/clubb/CLUBB_core')
-	print(getModules(fName))
-	
+	writeModules('/home/Diyor.Zakirov/atmos_param/cloud_generator')
