@@ -1,4 +1,4 @@
-#How to run a parser test
+# How to run a parser test
 
 1. git clone the diyorzakirov07/mkmf2 branch.
 2. cd to mkmf2. 
@@ -6,9 +6,9 @@
 
 **Example:** 
 ```
-./parserTest.py path/to/your/file
+python parserTest.py path/to/your/file
 or
-./parserTest.py diag_manager.F90
+python parserTest.py diag_manager.F90
 ```
 
 4. The script will print out all the module dependencies the file has. 
