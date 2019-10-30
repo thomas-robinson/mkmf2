@@ -1,4 +1,4 @@
-'''
+''' 
 !***********************************************************************
 !*                   GNU Lesser General Public License
 !*
@@ -21,7 +21,7 @@
 !***********************************************************************
 '''
 
-from parseShort import getModules;
+from parseShort import writeModules;
 import sys;
 
 if __name__ == "__main__":
@@ -29,10 +29,16 @@ if __name__ == "__main__":
 	for i in sys.argv:
 		if i == "--verbose" or i == "-v":
 			verbose = True
+		if i == "-h" or i == "--help":
+			print("----------------------------")
+			print("Available options for mkmf2")
+			print("-v/--verbose     Prints out each step the script is doing.")
+			print("-h/--help        Available arguments for mkmf2 script")
+			sys.exit()
 	
 	print("------------------------------")
-	for i in getModules(sys.argv[1], verbose):
-		print(i)
+	writeModules(sys.argv[1], verbose)
+	print("Done")
 	print("------------------------------")
 	
 	

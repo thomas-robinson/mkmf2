@@ -2,7 +2,7 @@
 
 1. git clone the diyorzakirov07/mkmf2 branch.
 2. cd to mkmf2. 
-3. Run the parserTest.py script that requiers a path to the .F90 file or use 'diag_manager.F90'.
+3. Run the parserTest.py script that requiers a path to a .F90 file or use 'diag_manager.F90'.
 
 **Example:** 
 ```
@@ -11,8 +11,15 @@ or
 python parserTest.py diag_manager.F90
 ```
 
-4. The script will print out all the module dependencies the file has. 
+4. The script will print out all the module dependencies the file has.
+5. You also can test the Makefile.am creation.
+6. Run the mkmf2.py script with a path to the folder with Fortran modules.
 
+**Example:**
+```
+python mkmf2.py path/to/your/folder
+``` 
+7. Makefile.am will be created in the same path that was given. 
 
 # mkmf2
 mkmf2 is a tool to create Makefile.am files based on fortran module depenencies.  

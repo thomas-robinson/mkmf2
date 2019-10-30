@@ -1,9 +1,33 @@
+''' 
+!***********************************************************************
+!*                   GNU Lesser General Public License
+!*
+!* This file is part of the GFDL Flexible Modeling System (FMS).
+!*
+!* mkmf2 is free software: you can redistribute it and/or modify it under
+!* the terms of the GNU Lesser General Public License as published by
+!* the Free Software Foundation, either version 3 of the License, or (at
+!* your option) any later version.
+!*
+!* mkmf2 is distributed in the hope that it will be useful, but WITHOUT
+!* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+!* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+!* for more details.
+!*
+!* You should have received a copy of the GNU Lesser General Public
+!* License along with FMS.  If not, see <http://www.gnu.org/licenses/>.
+!*
+!* Author: Diyor Zakirov
+!***********************************************************************
+'''
+
 """Fortran file parser.
 Resolves dependencies between Fortran modules.
 """ 
 
 import re;
 import os;
+from docutils.parsers.rst.directives import encoding
 
 def getModules(fileName, verbose = False):
 	"""Parses Fortran file and returns module dependencies.
@@ -14,7 +38,7 @@ def getModules(fileName, verbose = False):
 	"""
 	MODS = [] 
 	
-	fileContents = open(fileName).read()
+	fileContents = open(fileName, encoding = 'latin-1').read()
 
 	if verbose:
 		print("Open " + fileName + " and read contents")
@@ -62,7 +86,7 @@ def getFileModuleName(fileName):
 	
 	Requires name of file to be parsed.
 	"""
-	fileContents = open(fileName).read()
+	fileContents = open(fileName, encoding = 'latin-1').read()
 	
 	moduleNameMatch = re.compile('MODULE+.*', re.IGNORECASE)
 	
@@ -86,7 +110,7 @@ def getPathModuleNameList(path):
 	
 
 
-def writeModules(path, verbose = True):
+def writeModules(path, verbose = False):
 	"""Creates a Makefile.am
 	
 	Creates a Makefile.am in the path provided, resolving all possible dependencies.
@@ -97,7 +121,7 @@ def writeModules(path, verbose = True):
 	
 	folder = path.split('/')[len(path.split('/'))-1]
 	
-	makefile = open('Makefile.am', 'w')
+	makefile = open('Makefile.am', 'w',)
 	
 	fileList = os.listdir(path)
 	
@@ -107,16 +131,16 @@ def writeModules(path, verbose = True):
 		print("Setting work directory to " + path + "\n")
 		print("Files to parse:\n")
 		for f in fileList:
-			print(f + "\n")
+			print(f)
 	
 	"""List all possible sub directories"""
-	makefile.write("SUBDIRS = \ \n")
+	makefile.write("\nSUBDIRS = \ \n")
 	if verbose:
-		print("Writing sub directories... \n")
+		print("\nWriting sub directories... \n")
 	for file in fileList:
 		if not fortranMatch.match(file) and not os.path.isfile(file):
 			if verbose:
-				print(file + "\n")
+				print(file)
 			makefile.write("\t" + file + " \ \n")
 	
 	makefile.write("\n\n")
@@ -124,18 +148,18 @@ def writeModules(path, verbose = True):
 	makefile.write("lib" + folder +"_la_SOURCES = \ \n")
 	
 	if verbose:
-		print("Writing Fortran sources... \n")
+		print("\nWriting Fortran sources... \n")
 	"""List Fortran file sources"""
 	for file in fileList:
 		if fortranMatch.match(file):
 			if verbose:
-				print(file + "\n")
+				print(file)
 			makefile.write("\t" + file + " \ \n")
 	
 	makefile.write("\n\n")
 	
 	if verbose:
-		print("Writing module initialization... ")
+		print("\nWriting module initialization... ")
 	"""Initialize the modules"""	
 	for file in fileList:
 		if fortranMatch.match(file):
@@ -144,7 +168,7 @@ def writeModules(path, verbose = True):
 	makefile.write("\n\n")
 	
 	if verbose:
-		print("Writing module dependencies... ")
+		print("\nWriting module dependencies... \n")
 	"""List dependencies of each file"""
 	for file in fileList:
 		if fortranMatch.match(file):
@@ -167,4 +191,5 @@ def writeModules(path, verbose = True):
 	makefile.write("CLEANFILES = *.$(FC_MODEXT)")
 
 if __name__ == '__main__':
-	writeModules('/home/Diyor.Zakirov/atmos_param/diag_cloud_rad')
+	#writeModules('/home/Diyor.Zakirov/atmos_param/clubb/CLUBB_core')
+	pass
