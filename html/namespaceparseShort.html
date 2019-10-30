@@ -43,8 +43,7 @@
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#func-members">Functions</a> &#124;
-<a href="#var-members">Variables</a>  </div>
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">parseShort Namespace Reference</div>  </div>
 </div><!--header-->
@@ -56,14 +55,10 @@ Functions</h2></td></tr>
 <tr class="separator:a26b469c02c0639e2017b2268e68d20fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a45dfd3855b2d706d5103da9c6c959a98"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceparseShort.html#a45dfd3855b2d706d5103da9c6c959a98">getFileModuleName</a></td></tr>
 <tr class="separator:a45dfd3855b2d706d5103da9c6c959a98"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a205c1f388c9160ae11ed72d1e7ecef2f"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceparseShort.html#a205c1f388c9160ae11ed72d1e7ecef2f">getPathModuleNameList</a></td></tr>
+<tr class="separator:a205c1f388c9160ae11ed72d1e7ecef2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab25613bffa3d81d9ca466afcd34fb5ac"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceparseShort.html#ab25613bffa3d81d9ca466afcd34fb5ac">writeModules</a></td></tr>
 <tr class="separator:ab25613bffa3d81d9ca466afcd34fb5ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
-Variables</h2></td></tr>
-<tr class="memitem:a5b5f1f3116961541860008a094ff489b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5b5f1f3116961541860008a094ff489b"></a>
-string&#160;</td><td class="memItemRight" valign="bottom"><b>fName</b> = &quot;diag_manager.F90&quot;</td></tr>
-<tr class="separator:a5b5f1f3116961541860008a094ff489b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><pre class="fragment">Fortran file parser.
@@ -119,6 +114,25 @@ Requires a name of the file to be parsed.
 </pre> 
 </div>
 </div>
+<a class="anchor" id="a205c1f388c9160ae11ed72d1e7ecef2f"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def parseShort.getPathModuleNameList </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<pre class="fragment">Outputs a list of modules in given path.
+
+Requires a path to be parsed.
+</pre> 
+</div>
+</div>
 <a class="anchor" id="ab25613bffa3d81d9ca466afcd34fb5ac"></a>
 <div class="memitem">
 <div class="memproto">
@@ -127,8 +141,18 @@ Requires a name of the file to be parsed.
           <td class="memname">def parseShort.writeModules </td>
           <td>(</td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>path</em></td><td>)</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>verbose</em> = <code>Flase</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
