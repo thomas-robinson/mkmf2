@@ -92,7 +92,11 @@ def getFileModuleName(fileName):
 	
 	matches = re.findall(moduleNameMatch, fileContents)
 	
-	return matches[0].split(' ')[1]
+	if not matches:
+		matches = [' ']
+		return matches
+	else:
+		return matches[0].split(' ')[1]
 
 
 def getPathModuleNameList(path):
@@ -127,6 +131,11 @@ def writeModules(path, verbose = False):
 	
 	fortranMatch = re.compile('.*F90', re.IGNORECASE)
 	
+	
+	SUBDIRS = False
+	SOURCES = False
+	DEPENDENCIES = False
+	
 	if verbose:
 		print("Setting work directory to " + path + "\n")
 		print("Files to parse:\n")
@@ -134,36 +143,47 @@ def writeModules(path, verbose = False):
 			print(f)
 	
 	"""List all possible sub directories"""
-	makefile.write("\nSUBDIRS = \ \n")
-	if verbose:
-		print("\nWriting sub directories... \n")
 	for file in fileList:
 		if not fortranMatch.match(file) and not os.path.isfile(file):
-			if verbose:
-				print(file)
-			makefile.write("\t" + file + " \ \n")
+			SUBDIRS = True;
+	if verbose:
+		print("\nWriting sub directories... \n")
+	if SUBDIRS:
+		makefile.write("\nSUBDIRS = \\\n")
+		for file in fileList:
+			if (file == fileList[-1] and fortranMatch.match(file)) or (file == fileList[-2] and fortranMatch.match(file)):
+				makefile.write("\t" + file)
+			if not fortranMatch.match(file) and not os.path.isfile(file):
+				if verbose:
+					print(file)
+				makefile.write("\t" + file + " \\\n")
 	
 	makefile.write("\n\n")
-	makefile.write("noinst_LTLIBRARIES = lib" + folder + ".la\n")
-	makefile.write("lib" + folder +"_la_SOURCES = \ \n")
 	
-	if verbose:
-		print("\nWriting Fortran sources... \n")
 	"""List Fortran file sources"""
 	for file in fileList:
 		if fortranMatch.match(file):
-			if verbose:
-				print(file)
-			makefile.write("\t" + file + " \ \n")
+			SOURCES = True;
+	if verbose:
+		print("\nWriting Fortran sources... \n")
+	if SOURCES:
+		makefile.write("noinst_LTLIBRARIES = lib" + folder + ".la\n")
+		makefile.write("lib" + folder +"_la_SOURCES = \\\n")
+		for file in fileList:
+			if fortranMatch.match(file):
+				if verbose:
+					print(file)
+				makefile.write("\t" + file + " \\\n")
 	
 	makefile.write("\n\n")
 	
 	if verbose:
 		print("\nWriting module initialization... ")
 	"""Initialize the modules"""	
-	for file in fileList:
-		if fortranMatch.match(file):
-			makefile.write(getFileModuleName(file) + ".$(FC_MODEXT) : " + file.split('.')[0] + ".$(OBJEXT)\n")
+	if SOURCES:
+		for file in fileList:
+			if fortranMatch.match(file):
+				makefile.write(getFileModuleName(file) + ".$(FC_MODEXT) : " + file.split('.')[0] + ".$(OBJEXT)\n")
 		
 	makefile.write("\n\n")
 	
@@ -172,24 +192,28 @@ def writeModules(path, verbose = False):
 	"""List dependencies of each file"""
 	for file in fileList:
 		if fortranMatch.match(file):
-			makefile.write(file.split('.')[0] + ".$(OBJEXT) : \ \n")
+			check = any(item in getModules(file, verbose) for item in getPathModuleNameList(path))
+			if check:
+				makefile.write(file.split('.')[0] + ".$(OBJEXT) : \\\n")
 			for mod in getModules(file, verbose):
-				makefile.write("\t" + mod + ".$(FC_MODEXT) \ \n")
+				if mod in getPathModuleNameList(path):
+					makefile.write("\t" + mod + ".$(FC_MODEXT) \\\n")
 				
 	makefile.write("\n\n")
-	makefile.write("MODFILES = \ \n")
-	
+
 	"""List all modules files in built_sources"""
-	for file in fileList:
-		if fortranMatch.match(file):
-				makefile.write("\t" + getFileModuleName(file) + ".$(FC_MODEXT) \ \n")
+	if SOURCES:
+		makefile.write("MODFILES = \\\n")
+		for file in fileList:
+			if fortranMatch.match(file):
+					makefile.write("\t" + getFileModuleName(file) + ".$(FC_MODEXT) \\\n")
 	
-	makefile.write("BUILT_SOURCES = $(MODFILES)\n")
-	makefile.write("include_HEADERS = $(MODFILES)\n")
+		makefile.write("BUILT_SOURCES = $(MODFILES)\n")
+		makefile.write("include_HEADERS = $(MODFILES)\n")
+	
 	makefile.write("\n\n")
 	
 	makefile.write("CLEANFILES = *.$(FC_MODEXT)")
 
 if __name__ == '__main__':
-	#writeModules('/home/Diyor.Zakirov/atmos_param/clubb/CLUBB_core')
-	pass
+	writeModules('/home/Diyor.Zakirov/atmos_param')

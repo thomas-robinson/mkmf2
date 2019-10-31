@@ -1,3 +1,7 @@
+
+from parseShort import getModules;
+import sys;
+
 '''
 !***********************************************************************
 !*                   GNU Lesser General Public License
@@ -20,9 +24,6 @@
 !* Author: Diyor Zakirov
 !***********************************************************************
 '''
-
-from parseShort import getModules;
-import sys;
 
 if __name__ == "__main__":
 	verbose = False
