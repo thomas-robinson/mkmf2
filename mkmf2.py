@@ -1,3 +1,8 @@
+"""Main mkmf2 script.
+
+From here you can run all the mkmf2 options including: -R, -v, -h
+"""
+
 ''' 
 !***********************************************************************
 !*                   GNU Lesser General Public License
@@ -26,18 +31,28 @@ import sys;
 
 if __name__ == "__main__":
 	verbose = False
+	recursive = False
+	vv = False
+	
 	for i in sys.argv:
+		if i == "-R" or i == "--recursive":
+			recursive = True
 		if i == "--verbose" or i == "-v":
 			verbose = True
+		if i == "-vv" or i == "--very-verbose":
+			vv = True
 		if i == "-h" or i == "--help":
 			print("----------------------------")
 			print("Available options for mkmf2")
-			print("-v/--verbose     Prints out each step the script is doing.")
-			print("-h/--help        Available arguments for mkmf2 script")
+			print("-v/--verbose         Prints out each step the script is doing")
+			print("-vv/--very-verbose   Prints out more detailed steps of the scripts")
+			print("-h/--help            Available arguments for mkmf2 script")
+			print("-R/--recursive       Run the script recursively, including all sub directories")
 			sys.exit()
+			
 	
 	print("------------------------------")
-	writeModules(sys.argv[1], verbose)
+	writeModules(sys.argv[1], verbose, vv, recursive)
 	print("Done")
 	print("------------------------------")
 	

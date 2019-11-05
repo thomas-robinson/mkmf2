@@ -1,3 +1,8 @@
+"""mkmf2
+
+Resolves dependencies between Fortran modules.
+""" 
+
 ''' 
 !***********************************************************************
 !*                   GNU Lesser General Public License
@@ -20,17 +25,8 @@
 !* Author: Diyor Zakirov
 !***********************************************************************
 '''
-from conda_env.env import Dependencies
-from boto.mws.response import GetSubscriptionResult
-from conda.exports import subdir
-
-"""Fortran file parser.
-Resolves dependencies between Fortran modules.
-""" 
-
 import re;
 import os;
-from docutils.parsers.rst.directives import encoding
 
 def getModules(fileName, verbose = False):
 	"""Parses Fortran file and returns module dependencies.
@@ -85,7 +81,7 @@ def getModules(fileName, verbose = False):
 
 
 def getFileModuleName(fileName):
-	"""Outputs the module name of a file.
+	"""Returns the module name of a file.
 	
 	Requires name of file to be parsed.
 	"""
@@ -95,8 +91,10 @@ def getFileModuleName(fileName):
 	
 	matches = re.findall(moduleNameMatch, fileContents)
 	
-	
 	if not matches:
+		matches = ' '
+		return matches
+	if matches[0] == "module" or matches[0] == "module.":
 		matches = ' '
 		return matches
 	else:
@@ -104,28 +102,53 @@ def getFileModuleName(fileName):
 
 
 def getPathModuleNameList(path):
-	"""Outputs a list of modules in given path.
+	"""Returns a list of modules in given path.
 	
 	Requires a path to be parsed.
 	"""
-	
 	moduleList = []
+	
+	fileList = os.listdir(path)
+	for file in fileList:
+		if os.path.isfile(file) and file != "Makefile.am":
+			moduleList.append(getFileModuleName(file))
+	
+	return moduleList
+
+def getSubdirModuleNameList(path):
+	"""Returns a list of modules from sub directories of a path given.
+	
+	Requires a path to be parsed.
+	"""
+	subdirModuleList = []
 	
 	fileList = os.listdir(path)
 	
 	for file in fileList:
 		if os.path.isfile(path + "/" + file) and file != "Makefile.am":
-			moduleList.append(getFileModuleName(path + "/" + file))
-	
-	return moduleList
-		
+			subdirModuleList.append(getFileModuleName(path + "/" + file))
+			
+	return subdirModuleList
 
-def writeModules(path, verbose = False):
+
+def writeModules(path, verbose = False, vv = False, recursive = False):
 	"""Creates a Makefile.am
 	
 	Creates a Makefile.am in the path provided, resolving all possible dependencies.
 	Requires a path to a folder with Fortran modules. 
 	"""
+	fortranMatch = re.compile('.*F90', re.IGNORECASE)
+	
+	"""Runs recursively"""
+	if recursive:
+		if verbose or vv:
+			print("Running recursively...")
+		for file in os.listdir(path):
+			if file == ".git":
+				pass
+			else:
+				if not os.path.isfile(path + "/" + file):
+					writeModules(path + "/" + file)
 	
 	os.chdir(path)
 	
@@ -135,92 +158,119 @@ def writeModules(path, verbose = False):
 	
 	fileList = os.listdir(path)
 	
-	fortranMatch = re.compile('.*F90', re.IGNORECASE)
-	
 	subDirModules = []
 	
 	DONE = False
 	
 	AMCPPFLAGS_str = ''
 	SUBDIRS_str = ''
+	SUBDIRSLIB_str = ''
 	SOURCES_str = ''
 	MODULESINIT_str = ''
 	DEPENDENCIES_str = ''
 	BUILTSOURCES_str = ''
 	
-	if verbose:
+	if verbose or vv:
 		print("Setting work directory to " + path + "\n")
 		print("Files to parse:\n")
 		for f in fileList:
 			print(f)
 	
+	"""Populating the subDirModules if there are any"""
+	if recursive:
+		for file in fileList:
+			if file == ".git":
+				break;
+			if not os.path.isfile(path + "/" + file):
+				subDirModules += (getSubdirModuleNameList(path + "/" + file))
+
 	
 	for file in fileList:
-		
 		"""List all possible sub directories"""
-		if not os.path.isfile(file) and not fortranMatch.match(file):
+		if not os.path.isfile(path + "/" + file):
+			if vv:
+				print("Found sub directory: " + file)
 			SUBDIRS_str += ("\t" + file + " \\\n")
-			print(path + "/" + file)
-			subDirModules.append(getPathModuleNameList(path + "/" + file))
+			SUBDIRSLIB_str += "\tlib" + file + ".la \\\n"
 		
 		
 		"""List Fortran file sources"""
 		if fortranMatch.match(file):
-			SOURCES_str += ("\t" + file + "\\\n")
+			if vv:
+				print("Found source file: " + file)
+			SOURCES_str += ("\t" + file + " \\\n")
 			MODULESINIT_str += (getFileModuleName(file) + ".$(FC_MODEXT) : " + file.split('.')[0] + ".$(OBJEXT)\n")
 			
 			"""List dependencies of each file"""
-			check = any(item in getModules(file, verbose) for item in getPathModuleNameList(path))
-			print(check)
-			if check:
+			set1 = set(getModules(file, verbose)).intersection(getPathModuleNameList(path))
+			set2 = set(getModules(file, verbose)).intersection(subDirModules)
+			if set1 or set2:
+				if vv:
+					print("Found dependencies for " + file)
+					print("Dependencies...\n")
+					print(set1)
+					print(set2)
 				DEPENDENCIES_str += (file.split('.')[0] + ".$(OBJEXT) : \\\n")
-			for mod in getModules(file, verbose):
-				if mod in getPathModuleNameList(path) or subDirModules:
-					DONE = True
-					DEPENDENCIES_str += ("\t" + mod + ".$(FC_MODEXT) \\\n")
+			for mod in set1:
+				DONE = True
+				DEPENDENCIES_str += ("\t" + mod + ".$(FC_MODEXT) \\\n")
+			for mod in set2:
+				DONE = True
+				DEPENDENCIES_str += ("\t" + mod + ".$(FC_MODEXT) \\\n")
 			if DONE:
 				DEPENDENCIES_str = DEPENDENCIES_str[0:len(DEPENDENCIES_str)-3] + "\n"
 				DONE = False		
 			
 			"""List all modules files in built_sources"""
+
 			BUILTSOURCES_str += ("\t" + getFileModuleName(file) + ".$(FC_MODEXT) \\\n")
 	
 	
 	"""Write populated strings to the file"""
-	if verbose:
+	if verbose or vv:
 		print("\nWriting sub directories... \n")
 	if SUBDIRS_str != '':
 		makefile.write("SUBDIRS = \\\n" + SUBDIRS_str[0:len(SUBDIRS_str)-3] + '\n')
+		makefile.write('\n\n')
+		makefile.write("lib" + folder + "_la_LIBADD = \\\n" + SUBDIRSLIB_str[0:len(SUBDIRSLIB_str)-3] + '\n')
 	
 	makefile.write("\n\n")
 	
-	if verbose:
+	if verbose or vv:
 		print("\nWriting Fortran sources... \n")
 	if SOURCES_str != '':
 		makefile.write("noinst_LTLIBRARIES = lib" + folder + ".la\n" +
 					  "lib" + folder +"_la_SOURCES = \\\n" + 
 					  SOURCES_str[0:len(SOURCES_str)-2] + '\n')
+		
 		makefile.write("\n\n")
-		if verbose:
+		
+		if verbose or vv:
 			print("\nWriting module initializations... \n")
 		makefile.write(MODULESINIT_str)
+		
 		makefile.write("\n\n")
-		if verbose:
+		
+		if verbose or vv:
 			print("\nWriting module dependencies... \n")
 		makefile.write(DEPENDENCIES_str)
+		
 		makefile.write("\n\n")
+		
+		if verbose or vv:
+			print("\nWriting built_sources... \n")
 		makefile.write("MODFILES = \\\n" + BUILTSOURCES_str[0:len(BUILTSOURCES_str)-3] + '\n' + 
 					"BUILT_SOURCES = $(MODFILES)\n" + 
 					"include_HEADERS = $(MODFILES)\n")
+		
 		makefile.write("\n\n")
 	
 	
 	makefile.write("CLEANFILES = *.$(FC_MODEXT)")
 	
-	print(subDirModules)
 	
 if __name__ == '__main__':
-	writeModules('/home/Diyor.Zakirov/atmos_param/clubb')
+	writeModules('/home/Diyor.Zakirov/atmos_param')
 
 	
                                      

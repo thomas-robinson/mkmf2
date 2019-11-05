@@ -1,8 +1,8 @@
 # How to run a parser test
 
-1. git clone the diyorzakirov07/mkmf2 branch.
-2. cd to mkmf2. 
-3. Run the parserTest.py script that requiers a path to a .F90 file or use 'diag_manager.F90'.
+1. git clone the diyorzakirov07/mkmf2_license branch.
+2. cd to mkmf2_license. 
+3. Run the parserTest.py script that requiers a full path to a .F90 file or use 'diag_manager.F90'.
 
 **Example:** 
 ```
@@ -13,7 +13,7 @@ python parserTest.py diag_manager.F90
 
 4. The script will print out all the module dependencies the file has.
 5. You also can test the Makefile.am creation.
-6. Run the mkmf2.py script with a path to the folder with Fortran modules.
+6. Run the mkmf2.py script with a full path to the folder with Fortran modules.
 
 **Example:**
 ```

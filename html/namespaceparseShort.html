@@ -57,11 +57,14 @@ Functions</h2></td></tr>
 <tr class="separator:a45dfd3855b2d706d5103da9c6c959a98"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a205c1f388c9160ae11ed72d1e7ecef2f"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceparseShort.html#a205c1f388c9160ae11ed72d1e7ecef2f">getPathModuleNameList</a></td></tr>
 <tr class="separator:a205c1f388c9160ae11ed72d1e7ecef2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6116ef0edd518abc25f1a3b5b83c43b"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceparseShort.html#ae6116ef0edd518abc25f1a3b5b83c43b">getSubdirModuleNameList</a></td></tr>
+<tr class="separator:ae6116ef0edd518abc25f1a3b5b83c43b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab25613bffa3d81d9ca466afcd34fb5ac"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceparseShort.html#ab25613bffa3d81d9ca466afcd34fb5ac">writeModules</a></td></tr>
 <tr class="separator:ab25613bffa3d81d9ca466afcd34fb5ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><pre class="fragment">Fortran file parser.
+<div class="textblock"><pre class="fragment">mkmf2
+
 Resolves dependencies between Fortran modules.
 </pre> </div><h2 class="groupheader">Function Documentation</h2>
 <a class="anchor" id="a45dfd3855b2d706d5103da9c6c959a98"></a>
@@ -77,7 +80,7 @@ Resolves dependencies between Fortran modules.
         </tr>
       </table>
 </div><div class="memdoc">
-<pre class="fragment">Outputs the module name of a file.
+<pre class="fragment">Returns the module name of a file.
 
 Requires name of file to be parsed.
 </pre> 
@@ -127,7 +130,26 @@ Requires a name of the file to be parsed.
         </tr>
       </table>
 </div><div class="memdoc">
-<pre class="fragment">Outputs a list of modules in given path.
+<pre class="fragment">Returns a list of modules in given path.
+
+Requires a path to be parsed.
+</pre> 
+</div>
+</div>
+<a class="anchor" id="ae6116ef0edd518abc25f1a3b5b83c43b"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def parseShort.getSubdirModuleNameList </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<pre class="fragment">Returns a list of modules from sub directories of a path given.
 
 Requires a path to be parsed.
 </pre> 
@@ -147,7 +169,19 @@ Requires a path to be parsed.
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>verbose</em> = <code>Flase</code>&#160;</td>
+          <td class="paramname"><em>verbose</em> = <code>False</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>vv</em> = <code>False</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>recursive</em> = <code>False</code>&#160;</td>
         </tr>
         <tr>
           <td></td>

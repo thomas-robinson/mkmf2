@@ -1,4 +1,7 @@
+"""Parser Test.
 
+Simple test of the Fortran file parser.
+"""
 from parseShort import getModules;
 import sys;
 
@@ -33,7 +36,8 @@ if __name__ == "__main__":
 	
 	print("------------------------------")
 	for i in getModules(sys.argv[1], verbose):
-		print(i)
+		if not verbose:
+			print(i)
 	print("------------------------------")
 	
 	
