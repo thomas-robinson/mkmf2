@@ -1,7 +1,7 @@
 # How to run a parser test
 
 1. git clone the diyorzakirov07/mkmf2_license branch.
-2. cd to mkmf2_license. 
+2. cd to mkmf2. 
 3. Run the parserTest.py script that requiers a full path to a .F90 file or use 'diag_manager.F90'.
 
 **Example:** 
