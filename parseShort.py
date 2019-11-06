@@ -28,6 +28,7 @@ Resolves dependencies between Fortran modules.
 import re;
 import os;
 
+
 def getModules(fileName, verbose = False):
 	"""Parses Fortran file and returns module dependencies.
 
@@ -130,8 +131,23 @@ def getSubdirModuleNameList(path):
 			
 	return subdirModuleList
 
+amcppDic = {}
+def getAMCPP(path):
+	
+	fortranMatch = re.compile('.*F90', re.IGNORECASE)
+	
+	fileList = os.listdir(path)
+	
+	for file in fileList:
+		if not os.path.isfile(path + "/" + file):
+			getAMCPP(path + "/" + file)
+		elif fortranMatch.match(file):
+			amcppDic[getFileModuleName(path + "/" + file)] = path.split('/')[len(path.split('/'))-1]
+			
+	return amcppDic
+			
 
-def writeModules(path, verbose = False, vv = False, recursive = False):
+def writeModules(path, verbose = False, vv = False, recursive = False, mainDir = False):
 	"""Creates a Makefile.am
 	
 	Creates a Makefile.am in the path provided, resolving all possible dependencies.
@@ -161,6 +177,10 @@ def writeModules(path, verbose = False, vv = False, recursive = False):
 	subDirModules = []
 	
 	DONE = False
+	
+	amcppDict = {}
+	if mainDir:
+		amcppDict = getAMCPP('/home/Diyor.Zakirov/atmos_param')
 	
 	AMCPPFLAGS_str = ''
 	SUBDIRS_str = ''
@@ -204,6 +224,12 @@ def writeModules(path, verbose = False, vv = False, recursive = False):
 			"""List dependencies of each file"""
 			set1 = set(getModules(file, verbose)).intersection(getPathModuleNameList(path))
 			set2 = set(getModules(file, verbose)).intersection(subDirModules)
+			for mod in getModules(file):
+				if mod in amcppDict and not mod in set1 and not mod in set2:
+					if amcppDict[mod] in AMCPPFLAGS_str:
+						pass; 
+					else:
+						AMCPPFLAGS_str += "\t-I${top_buildir}/" + amcppDict[mod] + "\\\n"
 			if set1 or set2:
 				if vv:
 					print("Found dependencies for " + file)
@@ -227,6 +253,12 @@ def writeModules(path, verbose = False, vv = False, recursive = False):
 	
 	
 	"""Write populated strings to the file"""
+	if AMCPPFLAGS_str != '':
+		if verbose or vv:
+			print("\nWriting AMCPPFLAGS... \n")
+		makefile.write("AM_CPPFLAGS = \\\n" + AMCPPFLAGS_str[0:len(AMCPPFLAGS_str)-3] + '\n')
+	
+	
 	if verbose or vv:
 		print("\nWriting sub directories... \n")
 	if SUBDIRS_str != '':
@@ -270,7 +302,7 @@ def writeModules(path, verbose = False, vv = False, recursive = False):
 	
 	
 if __name__ == '__main__':
-	writeModules('/home/Diyor.Zakirov/atmos_param')
-
+	writeModules('/home/Diyor.Zakirov/atmos_param/aerosol_cloud')
+	
 	
                                      
