@@ -224,6 +224,7 @@ def writeModules(path, verbose = False, vv = False, recursive = False, mainDir =
 			"""List dependencies of each file"""
 			set1 = set(getModules(file, verbose)).intersection(getPathModuleNameList(path))
 			set2 = set(getModules(file, verbose)).intersection(subDirModules)
+			"""List AMCPPFLAGS for modules"""
 			for mod in getModules(file):
 				if mod in amcppDict and not mod in set1 and not mod in set2:
 					if amcppDict[mod] in AMCPPFLAGS_str:
@@ -248,7 +249,6 @@ def writeModules(path, verbose = False, vv = False, recursive = False, mainDir =
 				DONE = False		
 			
 			"""List all modules files in built_sources"""
-
 			BUILTSOURCES_str += ("\t" + getFileModuleName(file) + ".$(FC_MODEXT) \\\n")
 	
 	
@@ -258,19 +258,19 @@ def writeModules(path, verbose = False, vv = False, recursive = False, mainDir =
 			print("\nWriting AMCPPFLAGS... \n")
 		makefile.write("AM_CPPFLAGS = \\\n" + AMCPPFLAGS_str[0:len(AMCPPFLAGS_str)-3] + '\n')
 	
-	
-	if verbose or vv:
-		print("\nWriting sub directories... \n")
+
 	if SUBDIRS_str != '':
+		if verbose or vv:
+			print("\nWriting sub directories... \n")
 		makefile.write("SUBDIRS = \\\n" + SUBDIRS_str[0:len(SUBDIRS_str)-3] + '\n')
 		makefile.write('\n\n')
 		makefile.write("lib" + folder + "_la_LIBADD = \\\n" + SUBDIRSLIB_str[0:len(SUBDIRSLIB_str)-3] + '\n')
 	
 	makefile.write("\n\n")
 	
-	if verbose or vv:
-		print("\nWriting Fortran sources... \n")
 	if SOURCES_str != '':
+		if verbose or vv:
+			print("\nWriting Fortran sources... \n")
 		makefile.write("noinst_LTLIBRARIES = lib" + folder + ".la\n" +
 					  "lib" + folder +"_la_SOURCES = \\\n" + 
 					  SOURCES_str[0:len(SOURCES_str)-2] + '\n')
@@ -300,9 +300,8 @@ def writeModules(path, verbose = False, vv = False, recursive = False, mainDir =
 	
 	makefile.write("CLEANFILES = *.$(FC_MODEXT)")
 	
-	
 if __name__ == '__main__':
-	writeModules('/home/Diyor.Zakirov/atmos_param/aerosol_cloud')
+	writeModules('/home/Diyor.Zakirov/atmos_param/clubb')
 	
 	
                                      
