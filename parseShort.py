@@ -256,7 +256,6 @@ def writeModules(path, verbose = False, vv = False, recursive = False, mainDir =
 	if AMCPPFLAGS_str != '':
 		if verbose or vv:
 			print("\nWriting AMCPPFLAGS... \n")
-		print(AMCPPFLAGS_str)
 		makefile.write("AM_CPPFLAGS = \\\n" + AMCPPFLAGS_str[0:len(AMCPPFLAGS_str)-2] + '\n')
 	
 	makefile.write("\n\n")
