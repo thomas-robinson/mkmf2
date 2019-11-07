@@ -33,7 +33,7 @@ if __name__ == "__main__":
 	verbose = False
 	recursive = False
 	vv = False
-	
+	mainDir = False
 	for i in sys.argv:
 		if i == "-R" or i == "--recursive":
 			recursive = True
@@ -41,18 +41,21 @@ if __name__ == "__main__":
 			verbose = True
 		if i == "-vv" or i == "--very-verbose":
 			vv = True
+		if i == "--maindir":
+			mainDir = True
 		if i == "-h" or i == "--help":
 			print("----------------------------")
 			print("Available options for mkmf2")
 			print("-v/--verbose         Prints out each step the script is doing")
 			print("-vv/--very-verbose   Prints out more detailed steps of the scripts")
-			print("-h/--help            Available arguments for mkmf2 script")
 			print("-R/--recursive       Run the script recursively, including all sub directories")
+			print("--maindir            Specifies that this is a main directory for AMCPPFLAGS")
+			print("-h/--help            Available arguments for mkmf2 script")
 			sys.exit()
 			
 	
 	print("------------------------------")
-	writeModules(sys.argv[1], verbose, vv, recursive)
+	writeModules(sys.argv[1], verbose, vv, recursive, mainDir)
 	print("Done")
 	print("------------------------------")
 	

@@ -164,7 +164,7 @@ def writeModules(path, verbose = False, vv = False, recursive = False, mainDir =
 				pass
 			else:
 				if not os.path.isfile(path + "/" + file):
-					writeModules(path + "/" + file)
+					writeModules(path + "/" + file, verbose, vv)
 	
 	os.chdir(path)
 	
@@ -180,7 +180,7 @@ def writeModules(path, verbose = False, vv = False, recursive = False, mainDir =
 	
 	amcppDict = {}
 	if mainDir:
-		amcppDict = getAMCPP('/home/Diyor.Zakirov/atmos_param')
+		amcppDict = getAMCPP(path)
 	
 	AMCPPFLAGS_str = ''
 	SUBDIRS_str = ''
@@ -256,9 +256,11 @@ def writeModules(path, verbose = False, vv = False, recursive = False, mainDir =
 	if AMCPPFLAGS_str != '':
 		if verbose or vv:
 			print("\nWriting AMCPPFLAGS... \n")
-		makefile.write("AM_CPPFLAGS = \\\n" + AMCPPFLAGS_str[0:len(AMCPPFLAGS_str)-3] + '\n')
+		print(AMCPPFLAGS_str)
+		makefile.write("AM_CPPFLAGS = \\\n" + AMCPPFLAGS_str[0:len(AMCPPFLAGS_str)-2] + '\n')
 	
-
+	makefile.write("\n\n")
+	
 	if SUBDIRS_str != '':
 		if verbose or vv:
 			print("\nWriting sub directories... \n")
@@ -301,7 +303,8 @@ def writeModules(path, verbose = False, vv = False, recursive = False, mainDir =
 	makefile.write("CLEANFILES = *.$(FC_MODEXT)")
 	
 if __name__ == '__main__':
-	writeModules('/home/Diyor.Zakirov/atmos_param/clubb')
+	#writeModules('/home/Diyor.Zakirov/atmos_param')
+	pass
 	
 	
                                      
