@@ -5,5 +5,5 @@ python:
  - "3.6"
  - "3.7"
 script:
- - python parserTest diag_manager.F90
+ - python parserTest.py diag_manager.F90
  
