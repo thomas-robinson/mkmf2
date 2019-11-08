@@ -55,6 +55,8 @@ if __name__ == "__main__":
 			
 	
 	print("------------------------------")
+	print(recursive)
+	print(mainDir)
 	writeModules(sys.argv[1], verbose, vv, recursive, mainDir)
 	print("Done")
 	print("------------------------------")

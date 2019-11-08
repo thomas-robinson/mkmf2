@@ -156,7 +156,6 @@ def writeModules(path, verbose = False, vv = False, recursive = False, mainDir =
 	"""
 	if mainDir:
 		getAMCPP(path)
-		print(amcppDic)
 	
 	fortranMatch = re.compile('.*F90', re.IGNORECASE)
 	
@@ -169,7 +168,7 @@ def writeModules(path, verbose = False, vv = False, recursive = False, mainDir =
 				pass
 			else:
 				if not os.path.isfile(path + "/" + file):
-					writeModules(path + "/" + file, verbose, vv, mainDir = False)
+					writeModules(path + "/" + file, verbose, vv, recursive, mainDir = False)
 	
 	os.chdir(path)
 	
@@ -305,8 +304,7 @@ def writeModules(path, verbose = False, vv = False, recursive = False, mainDir =
 	
 	
 if __name__ == '__main__':
-	#writeModules('/home/Diyor.Zakirov/atmos_param')
-	pass
+	writeModules('/home/Diyor.Zakirov/atmos_param')
 
 	
 	
