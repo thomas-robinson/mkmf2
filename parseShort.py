@@ -227,13 +227,6 @@ def writeModules(path, verbose = False, vv = False, recursive = False, mainDir =
 			set2 = set(getModules(file, verbose)).intersection(subDirModules)
 			"""List AMCPPFLAGS for modules"""
 			for mod in getModules(file):
-				if file == "aerosol_cloud.F90":
-					print(file)
-					print(getModules(file))
-					print(amcppDic)
-					print(not mod in set1)
-					print(not mod in set2)
-					print(mod in amcppDic)
 				if mod in amcppDic and not mod in set1 and not mod in set2:
 					if amcppDic[mod] in AMCPPFLAGS_str:
 						pass; 
