@@ -26,7 +26,7 @@ From here you can run all the mkmf2 options including: -R, -v, -h
 !***********************************************************************
 '''
 
-from parseShort import writeModules;
+from parseShort import writeModules,getAMCPP;
 import sys;
 
 if __name__ == "__main__":

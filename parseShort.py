@@ -131,6 +131,7 @@ def getSubdirModuleNameList(path):
 			
 	return subdirModuleList
 
+"""Global value for APCPPFLAGS dictionary"""
 amcppDic = {}
 def getAMCPP(path):
 	
@@ -146,13 +147,17 @@ def getAMCPP(path):
 			
 	return amcppDic
 			
-
+			
 def writeModules(path, verbose = False, vv = False, recursive = False, mainDir = False):
 	"""Creates a Makefile.am
 	
 	Creates a Makefile.am in the path provided, resolving all possible dependencies.
 	Requires a path to a folder with Fortran modules. 
 	"""
+	if mainDir:
+		getAMCPP(path)
+		print(amcppDic)
+	
 	fortranMatch = re.compile('.*F90', re.IGNORECASE)
 	
 	"""Runs recursively"""
@@ -164,7 +169,7 @@ def writeModules(path, verbose = False, vv = False, recursive = False, mainDir =
 				pass
 			else:
 				if not os.path.isfile(path + "/" + file):
-					writeModules(path + "/" + file, verbose, vv)
+					writeModules(path + "/" + file, verbose, vv, mainDir = False)
 	
 	os.chdir(path)
 	
@@ -177,10 +182,6 @@ def writeModules(path, verbose = False, vv = False, recursive = False, mainDir =
 	subDirModules = []
 	
 	DONE = False
-	
-	amcppDict = {}
-	if mainDir:
-		amcppDict = getAMCPP(path)
 	
 	AMCPPFLAGS_str = ''
 	SUBDIRS_str = ''
@@ -207,7 +208,7 @@ def writeModules(path, verbose = False, vv = False, recursive = False, mainDir =
 	
 	for file in fileList:
 		"""List all possible sub directories"""
-		if not os.path.isfile(path + "/" + file):
+		if not os.path.isfile(path + "/" + file) and file != ".git":
 			if vv:
 				print("Found sub directory: " + file)
 			SUBDIRS_str += ("\t" + file + " \\\n")
@@ -226,11 +227,18 @@ def writeModules(path, verbose = False, vv = False, recursive = False, mainDir =
 			set2 = set(getModules(file, verbose)).intersection(subDirModules)
 			"""List AMCPPFLAGS for modules"""
 			for mod in getModules(file):
-				if mod in amcppDict and not mod in set1 and not mod in set2:
-					if amcppDict[mod] in AMCPPFLAGS_str:
+				if file == "aerosol_cloud.F90":
+					print(file)
+					print(getModules(file))
+					print(amcppDic)
+					print(not mod in set1)
+					print(not mod in set2)
+					print(mod in amcppDic)
+				if mod in amcppDic and not mod in set1 and not mod in set2:
+					if amcppDic[mod] in AMCPPFLAGS_str:
 						pass; 
 					else:
-						AMCPPFLAGS_str += "\t-I${top_buildir}/" + amcppDict[mod] + "\\\n"
+						AMCPPFLAGS_str += "\t-I${top_buildir}/" + amcppDic[mod] + "\\\n"
 			if set1 or set2:
 				if vv:
 					print("Found dependencies for " + file)
@@ -301,9 +309,12 @@ def writeModules(path, verbose = False, vv = False, recursive = False, mainDir =
 	
 	makefile.write("CLEANFILES = *.$(FC_MODEXT)")
 	
+	
+	
 if __name__ == '__main__':
 	#writeModules('/home/Diyor.Zakirov/atmos_param')
 	pass
+
 	
 	
                                      

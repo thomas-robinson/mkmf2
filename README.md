@@ -19,6 +19,14 @@ python parserTest.py diag_manager.F90
 ```
 python mkmf2.py path/to/your/folder
 ``` 
+**Available options for mkmf2.py**
+```
+-v/--verbose
+-vv/--very-verbose
+-R/--recursive
+--maindir
+-h/--help
+```
 7. Makefile.am will be created in the same path that was given. 
 
 # mkmf2
